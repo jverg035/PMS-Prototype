@@ -1,0 +1,126 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PMS Prototype</title>
+<style>
+:root{--ink:#1d2433;--mut:#5d6677;--line:#d9dee7;--pri:#1f4e79;--bg:#f4f6fa;--ok:#1b7f4b;--err:#b3261e;--warn:#9a6700}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+header{background:var(--pri);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:16px}header h1{font-size:17px;margin:0;flex:1}
+nav{background:#fff;border-bottom:1px solid var(--line);padding:0 14px;display:flex;gap:2px;flex-wrap:wrap}
+nav button{border:0;background:none;padding:11px 14px;cursor:pointer;color:var(--mut);font:inherit;border-bottom:3px solid transparent}
+nav button.on{color:var(--pri);border-color:var(--pri);font-weight:600}
+main{max-width:1000px;margin:20px auto;padding:0 16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+h2{margin:0 0 12px;font-size:18px}label{display:block;font-size:13px;color:var(--mut);margin:10px 0 3px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff}
+input.bad,select.bad{border-color:var(--err)}.fe{color:var(--err);font-size:12px;min-height:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+button.b{background:var(--pri);color:#fff;border:0;border-radius:6px;padding:9px 16px;cursor:pointer;font:inherit;margin:12px 8px 0 0}
+button.b.sec{background:#fff;color:var(--pri);border:1px solid var(--pri)}button.b.dng{background:var(--err)}
+table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);font-size:14px}th{background:#eef2f8}
+td.n,th.n{text-align:right}
+#msg{position:fixed;top:12px;right:12px;max-width:380px;z-index:9}.toast{padding:10px 14px;border-radius:6px;color:#fff;margin-bottom:8px}.toast.ok{background:var(--ok)}.toast.err{background:var(--err)}.toast.warn{background:var(--warn)}
+.tile{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin:0 10px 10px 0;cursor:pointer;background:#fff;min-width:170px;font-weight:600;color:var(--pri)}
+.pill{padding:2px 8px;border-radius:10px;font-size:12px;background:#e8eef7}.pill.Finalized{background:#d7f0e1;color:var(--ok)}.pill.Calculated{background:#fff1c9;color:var(--warn)}
+#modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;z-index:10}#modal .card{max-width:420px}
+.hint{color:var(--mut);font-size:13px}
+</style></head><body>
+<header><h1>Payroll Management System <span class="hint" style="color:#cfe0f3">· prototype</span></h1><span id="who" data-testid="who"></span><button id="logout" class="b sec" style="display:none;margin:0" data-testid="logout">Log out</button></header>
+<nav id="nav" data-ui="UI-3"></nav><div id="msg"></div>
+<main id="app"></main>
+<div id="modal"><div class="card"><h2 id="mt"></h2><p id="mb"></p><button class="b" id="mok" data-testid="confirm-yes">Confirm</button><button class="b sec" id="mno" data-testid="confirm-no">Cancel</button></div></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s), app=$('#app');
+let ME=null, MENU=[], LK=null;
+const LABEL={employees:'Employees',attendance:'Attendance',compensation:'Compensation',deductions:'Deductions',payroll:'Payroll',reports:'Reports',audit:'Audit Log',users:'Users',paystatement:'My Pay Statements'};
+const money=n=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,method='GET',body){
+  const r=await fetch('/api/'+path,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({})); if(r.status===401&&ME&&path!=='login'){ME=null;show();}
+  if(!r.ok){const e=new Error(j.error||'Error');e.fields=j.fields||{};e.status=r.status;throw e;} return j;
+}
+function toast(t,k='ok'){const d=document.createElement('div');d.className='toast '+k;d.textContent=t;d.dataset.testid='toast-'+k;$('#msg').appendChild(d);setTimeout(()=>d.remove(),k==='ok'?4000:7000)}
+function fieldErrs(form,e){form.querySelectorAll('.fe').forEach(x=>x.textContent='');form.querySelectorAll('.bad').forEach(x=>x.classList.remove('bad'));
+  for(const [k,v] of Object.entries(e.fields||{})){const el=form.querySelector(`[name=${k}]`);if(el){el.classList.add('bad');const s=form.querySelector(`[data-fe=${k}]`);if(s)s.textContent=v}}}
+function confirmBox(t,b){return new Promise(res=>{$('#mt').textContent=t;$('#mb').textContent=b;$('#modal').style.display='flex';
+  $('#mok').onclick=()=>{$('#modal').style.display='none';res(true)};$('#mno').onclick=()=>{$('#modal').style.display='none';res(false)}})}
+const f=(name,label,type='text',extra='')=>`<div><label>${label}</label><input name="${name}" type="${type}" data-testid="${name}" ${extra}><div class="fe" data-fe="${name}"></div></div>`;
+const sel=(name,label,opts,ph='Select...')=>`<div><label>${label}</label><select name="${name}" data-testid="${name}"><option value="">${ph}</option>${opts.map(o=>`<option value="${o[0]}">${esc(o[1])}</option>`).join('')}</select><div class="fe" data-fe="${name}"></div></div>`;
+const vals=form=>Object.fromEntries(new FormData(form).entries());
+
+async function show(){
+  if(!ME){const m=await api('me').catch(()=>({}));if(m.user){ME=m.user;MENU=m.menu}}
+  $('#logout').style.display=ME?'':'none';$('#who').textContent=ME?`${ME.username} · ${ME.role}`:'';
+  $('#nav').innerHTML=ME?`<button data-go="home" data-testid="nav-home">Home</button>`+MENU.map(m=>`<button data-go="${m}" data-testid="nav-${m}">${LABEL[m]}</button>`).join(''):'';
+  $('#nav').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  go(ME?'home':'login');
+}
+async function go(v){
+  $('#nav').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.go===v));
+  if(v!=='login'&&!LK&&ME)LK=await api('lookups');
+  await VIEWS[v]();
+}
+const VIEWS={
+login(){app.innerHTML=`<div class="card" style="max-width:380px;margin:40px auto" data-ui="UI-1"><h2>Log in</h2><form id="f" novalidate>${f('username','Username','text','autocomplete=username')}${f('password','Password','password','autocomplete=current-password')}
+<div class="fe" id="lerr" data-testid="login-error" style="font-size:14px"></div><button class="b" data-testid="login-btn">Log In</button><a href="#" id="fp" data-testid="forgot">Forgot Password?</a></form></div>`;
+ $('#fp').onclick=e=>{e.preventDefault();toast('Password reset email is a Release 1.1 feature (MW-9) - not in this prototype.','warn')};
+ $('#f').onsubmit=async e=>{e.preventDefault();const fm=e.target;$('#lerr').textContent='';try{const r=await api('login','POST',vals(fm));ME=r.user;MENU=r.menu;LK=null;show()}catch(x){fieldErrs(fm,x);$('#lerr').textContent=x.message}}},
+home(){const t=MENU.map(m=>`<div class="tile" data-go="${m}" data-testid="tile-${m}">${LABEL[m]}</div>`).join('');
+ app.innerHTML=`<div class="card" data-ui="UI-2"><h2 data-testid="welcome">Welcome, ${esc(ME.username)}</h2><p class="hint">Role: ${esc(ME.role)}. Choose a task:</p>${t}</div>`;
+ app.querySelectorAll('.tile').forEach(x=>x.onclick=()=>go(x.dataset.go))},
+async employees(){const d=LK.departments,p=LK.positions;
+ app.innerHTML=`<div class="card" data-ui="UI-4"><h2>Employees</h2><div class="row"><div><label>Search name or ID</label><input id="q" data-testid="search-q"></div>${sel('dept','Department',d.map(x=>[x.id,x.name]),'All')}</div>
+ <button class="b" id="s" data-testid="search-btn">Search</button><button class="b sec" id="add" data-testid="add-employee">+ Add</button><table><thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Position</th><th>Status</th><th></th></tr></thead><tbody id="rows" data-testid="emp-rows"></tbody></table></div>
+ <div class="card" id="ef" style="display:none" data-ui="UI-5"><h2>Add Employee</h2><form id="f" novalidate><div class="row">${f('first_name','First name')}${f('last_name','Last name')}${f('email','Email','email')}${f('hire_date','Hire date','date')}${sel('department_id','Department',d.map(x=>[x.id,x.name]))}${sel('position_id','Position',p.map(x=>[x.id,x.name]))}</div>
+ <button class="b" data-testid="save-employee">Save</button><button type="button" class="b sec" id="cx" data-testid="cancel-employee">Cancel</button></form></div>`;
+ const load=async()=>{const r=await api(`employees?q=${encodeURIComponent($('#q').value)}&department_id=${$('[name=dept]').value}`);
+  $('#rows').innerHTML=r.length?r.map(e=>`<tr><td>${e.id}</td><td>${esc(e.first_name+' '+e.last_name)}</td><td>${esc(e.department)}</td><td>${esc(e.position)}</td><td>${e.active?'Active':'Inactive'}</td><td>${e.active?`<button class="b sec" style="margin:0" data-deact="${e.id}" data-testid="deact-${e.id}">Deactivate</button>`:''}</td></tr>`).join(''):'<tr><td colspan=6 data-testid="no-results">No employees found.</td></tr>';
+  $('#rows').querySelectorAll('[data-deact]').forEach(b=>b.onclick=async()=>{if(await confirmBox('Deactivate employee?','The employee is excluded from future payroll. History is kept.')){await api(`employees/${b.dataset.deact}/deactivate`,'POST');toast('Employee deactivated.');load()}})};
+ $('#s').onclick=load;load();$('#add').onclick=()=>$('#ef').style.display='';$('#cx').onclick=()=>{$('#ef').style.display='none';$('#f').reset();fieldErrs($('#f'),{})};
+ $('#f').onsubmit=async e=>{e.preventDefault();try{await api('employees','POST',vals(e.target));toast('Employee saved.');e.target.reset();fieldErrs(e.target,{});$('#ef').style.display='none';load()}catch(x){fieldErrs(e.target,x);toast(x.message,'err')}}},
+async attendance(){const emps=await api('employees');
+ app.innerHTML=`<div class="card" data-ui="UI-6"><h2>Attendance Entry</h2><form id="f" novalidate><div class="row">${sel('employee_id','Employee',emps.filter(e=>e.active).map(e=>[e.id,e.first_name+' '+e.last_name]))}${f('work_date','Work date','date')}${f('regular','Regular hours','text')}${f('overtime','Overtime hours','text','value=0')}</div>
+ <button class="b" data-testid="submit-hours">Submit</button><button type="button" class="b sec" id="rs" data-testid="reset-hours">Reset</button></form><table><thead><tr><th>Date</th><th class="n">Regular</th><th class="n">Overtime</th></tr></thead><tbody id="rows" data-testid="att-rows"></tbody></table></div>`;
+ const load=async()=>{const id=$('[name=employee_id]').value;if(!id){$('#rows').innerHTML='';return}const r=await api(`attendance?employee_id=${id}`);$('#rows').innerHTML=r.map(a=>`<tr><td>${a.work_date}</td><td class=n>${a.regular}</td><td class=n>${a.overtime}</td></tr>`).join('')};
+ $('[name=employee_id]').onchange=load;$('#rs').onclick=()=>{$('#f').reset();fieldErrs($('#f'),{})};
+ $('#f').onsubmit=async e=>{e.preventDefault();try{const r=await api('attendance','POST',vals(e.target));toast('Hours saved.');if(r.flag)toast(r.flag,'warn');fieldErrs(e.target,{});load()}catch(x){fieldErrs(e.target,x);toast(x.message,'err')}}},
+async compensation(){const emps=await api('employees');
+ app.innerHTML=`<div class="card" data-ui="UI-7"><h2>Compensation Setup</h2><form id="f" novalidate><div class="row">${sel('employee_id','Employee',emps.map(e=>[e.id,e.first_name+' '+e.last_name]))}${sel('pay_type','Compensation type',[['hourly','Hourly rate'],['salary','Annual salary']])}${f('rate','Rate / salary')}${f('ot_multiplier','Overtime multiplier','text','value=1.5')}${f('bonus','Bonus','text','value=0')}</div>
+ <button class="b" data-testid="save-comp">Save</button></form></div>`;
+ $('[name=employee_id]').onchange=async e=>{if(!e.target.value)return;const c=await api('compensation?employee_id='+e.target.value);if(c.pay_type){const F=$('#f');F.pay_type.value=c.pay_type;F.rate.value=c.rate;F.ot_multiplier.value=c.ot_multiplier;F.bonus.value=c.bonus}};
+ $('#f').onsubmit=async e=>{e.preventDefault();try{await api('compensation','POST',vals(e.target));toast('Compensation saved.');fieldErrs(e.target,{})}catch(x){fieldErrs(e.target,x);toast(x.message,'err')}}},
+async deductions(){const emps=await api('employees');
+ app.innerHTML=`<div class="card" data-ui="UI-8"><h2>Deduction Setup</h2><form id="f" novalidate><div class="row">${sel('employee_id','Employee',emps.map(e=>[e.id,e.first_name+' '+e.last_name]))}${f('name','Deduction name')}${sel('kind','Type',[['tax','Tax'],['insurance','Insurance'],['retirement','Retirement'],['other','Other']])}${sel('mode','Method',[['flat','Flat amount'],['percent','Percentage']])}${f('value','Value')}</div>
+ <button class="b" data-testid="add-deduction">+ Add Deduction</button></form><table><thead><tr><th>Name</th><th>Type</th><th>Method</th><th class="n">Value</th><th></th></tr></thead><tbody id="rows" data-testid="ded-rows"></tbody></table></div>`;
+ const load=async()=>{const id=$('[name=employee_id]').value;if(!id){$('#rows').innerHTML='';return}const r=await api('deductions?employee_id='+id);$('#rows').innerHTML=r.map(d=>`<tr><td>${esc(d.name)}</td><td>${d.kind}</td><td>${d.mode}</td><td class=n>${d.mode==='percent'?d.value+'%':money(d.value)}</td><td><button class="b sec" style="margin:0" data-del="${d.id}">Remove</button></td></tr>`).join('');
+  $('#rows').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{await api('deductions/'+b.dataset.del,'DELETE');load()})};
+ $('[name=employee_id]').onchange=load;
+ $('#f').onsubmit=async e=>{e.preventDefault();try{await api('deductions','POST',vals(e.target));toast('Deduction added.');fieldErrs(e.target,{});load()}catch(x){fieldErrs(e.target,x);toast(x.message,'err')}}},
+async payroll(){const isPA=ME.role==='Payroll Administrator';
+ app.innerHTML=`<div class="card" data-ui="UI-9"><h2>Payroll Processing</h2>${isPA?`<form id="pf" novalidate><div class="row">${f('start_date','Period start','date')}${f('end_date','Period end','date')}</div><button class="b" data-testid="create-period">Create Period</button></form>`:'<p class="hint">Finance can calculate and finalize; period creation is for Payroll Administrators.</p>'}</div>
+ <div class="card"><div class="row">${sel('period','Payroll period',[], 'Select period...')}</div><button class="b" id="calc" data-testid="calculate">Calculate Payroll</button><button class="b sec" id="fin" data-testid="finalize">Finalize</button><div class="hint" id="st" data-testid="period-status"></div>
+ <table><thead><tr><th>Employee</th><th class="n">Reg h</th><th class="n">OT h</th><th class="n">Gross</th><th class="n">Deductions</th><th class="n">Net</th><th></th></tr></thead><tbody id="rows" data-testid="pay-rows"></tbody></table></div>`;
+ let P=[];const ps=$('[name=period]');
+ const loadP=async(keep)=>{P=await api('periods');ps.innerHTML='<option value="">Select period...</option>'+P.map(p=>`<option value="${p.id}">${p.start_date} to ${p.end_date} (${p.status})</option>`).join('');if(keep)ps.value=keep};
+ const res=async()=>{const id=ps.value;const p=P.find(x=>x.id==id);$('#st').innerHTML=p?`Status: <span class="pill ${p.status}" data-testid="status-pill">${p.status}</span>`:'';
+  if(!id){$('#rows').innerHTML='';return}const r=await api(`periods/${id}/results`);$('#rows').innerHTML=r.map(x=>`<tr><td>${esc(x.name)}</td><td class=n>${x.regular_hours}</td><td class=n>${x.overtime_hours}</td><td class=n>${money(x.gross)}</td><td class=n>${money(x.deductions)}</td><td class=n>${money(x.net)}</td><td>${x.warning?`<span class="pill" style="color:var(--warn)" data-testid="warn">${esc(x.warning)}</span>`:''}</td></tr>`).join('')};
+ await loadP();ps.onchange=res;
+ if(isPA)$('#pf').onsubmit=async e=>{e.preventDefault();try{const r=await api('periods','POST',vals(e.target));toast('Payroll period created.');fieldErrs(e.target,{});await loadP(r.id);res()}catch(x){fieldErrs(e.target,x);toast(x.message,'err')}};
+ $('#calc').onclick=async()=>{if(!ps.value)return toast('Select a payroll period first.','err');try{await api(`periods/${ps.value}/calculate`,'POST');toast('Payroll calculated. Review the results.');await loadP(ps.value);res()}catch(x){toast(x.message,'err')}};
+ $('#fin').onclick=async()=>{if(!ps.value)return toast('Select a payroll period first.','err');if(!await confirmBox('Finalize payroll?','This locks the period and cannot be undone.'))return;
+  try{await api(`periods/${ps.value}/finalize`,'POST');toast('Payroll finalized and locked.');await loadP(ps.value);res()}catch(x){toast(x.message,'err')}}},
+async reports(){const P=await api('periods');
+ app.innerHTML=`<div class="card" data-ui="UI-11"><h2>Payroll Summary Report</h2><div class="row">${sel('period','Payroll period',P.map(p=>[p.id,`${p.start_date} to ${p.end_date}`]))}</div><button class="b" id="g" data-testid="generate">Generate</button><div id="out"></div></div>`;
+ $('#g').onclick=async()=>{const id=$('[name=period]').value;if(!id)return toast('Select a payroll period.','err');const r=await api(`periods/${id}/report`);
+  $('#out').innerHTML=`<table data-testid="report-table"><thead><tr><th>Employee</th><th>Department</th><th class=n>Gross</th><th class=n>Deductions</th><th class=n>Net</th></tr></thead><tbody>${r.rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.department)}</td><td class=n>${money(x.gross)}</td><td class=n>${money(x.deductions)}</td><td class=n>${money(x.net)}</td></tr>`).join('')}<tr><th colspan=2>Total</th><th class=n data-testid="rt-gross">${money(r.totals.gross)}</th><th class=n>${money(r.totals.deductions)}</th><th class=n data-testid="rt-net">${money(r.totals.net)}</th></tr></tbody></table>`}},
+async paystatement(){const P=await api('paystatements');
+ app.innerHTML=`<div class="card" data-ui="UI-10"><h2>My Pay Statements</h2>${P.length?`<div class="row">${sel('period','Pay period',P.map(p=>[p.id,`${p.start_date} to ${p.end_date}`]))}</div><div id="out"></div>`:'<p data-testid="no-statements">No finalized pay statements are available yet.</p>'}</div>`;
+ if(P.length)$('[name=period]').onchange=async e=>{if(!e.target.value){$('#out').innerHTML='';return}const s=await api('paystatements/'+e.target.value);
+  $('#out').innerHTML=`<table data-testid="statement"><tr><th colspan=2>Earnings - ${esc(s.employee)} (${esc(s.period)})</th></tr><tr><td>Regular (${s.regular_hours} h)</td><td class=n>${money(s.regular_pay)}</td></tr><tr><td>Overtime (${s.overtime_hours} h)</td><td class=n>${money(s.overtime_pay)}</td></tr><tr><td>Bonus</td><td class=n>${money(s.bonus)}</td></tr><tr><th>Gross</th><th class=n data-testid="st-gross">${money(s.gross)}</th></tr><tr><th colspan=2>Deductions</th></tr>${s.deductions.map(d=>`<tr><td>${esc(d.name)}</td><td class=n>${money(d.amount)}</td></tr>`).join('')}<tr><th>Net Pay</th><th class=n data-testid="st-net">${money(s.net)}</th></tr></table><a class="b" style="display:inline-block;text-decoration:none" href="/api/paystatements/${e.target.value}/download" data-testid="download">Download</a>`}},
+async audit(){app.innerHTML=`<div class="card" data-ui="UI-13"><h2>Audit Log</h2><div class="row">${f('user','User')}</div><button class="b" id="g" data-testid="filter">Filter</button><table><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Record</th></tr></thead><tbody id="rows" data-testid="audit-rows"></tbody></table></div>`;
+ const load=async()=>{const r=await api('audit?user='+encodeURIComponent($('[name=user]').value));$('#rows').innerHTML=r.map(a=>`<tr><td>${a.ts}</td><td>${esc(a.username)}</td><td>${a.action}</td><td>${esc(a.record)}</td></tr>`).join('')};$('#g').onclick=load;load()},
+async users(){const r=await api('users');app.innerHTML=`<div class="card" data-ui="UI-12"><h2>Users</h2><table><thead><tr><th>User</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>${r.map(u=>`<tr><td>${esc(u.username)}</td><td>${esc(u.role)}</td><td>${u.locked?'Locked':'Active'}</td><td>${u.locked?`<button class="b sec" style="margin:0" data-un="${u.id}" data-testid="unlock-${u.username}">Unlock</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+ app.querySelectorAll('[data-un]').forEach(b=>b.onclick=async()=>{await api(`users/${b.dataset.un}/unlock`,'POST');toast('Account unlocked.');VIEWS.users()})}
+};
+$('#logout').onclick=async()=>{await api('logout','POST');ME=null;LK=null;show()};
+show();
+</script></body></html>
