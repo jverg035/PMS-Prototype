@@ -1,0 +1,893 @@
+{
+ "ect": [
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Valid",
+   "desc": "Valid username and password",
+   "value": "'padmin' / ***********",
+   "expected": "Dashboard",
+   "actual": "Dashboard",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Invalid",
+   "desc": "Valid username, wrong password",
+   "value": "'padmin' / *****",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Invalid",
+   "desc": "Unknown username",
+   "value": "'nobody' / ***********",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Empty",
+   "desc": "Empty username",
+   "value": "'' / ***********",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Empty",
+   "desc": "Empty password",
+   "value": "'padmin' / ",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Invalid",
+   "desc": "Username with only spaces",
+   "value": "'   ' / ***********",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "screen": "Login (UI-1)",
+   "field": "Username / Password",
+   "cls": "Invalid",
+   "desc": "SQL-injection style text",
+   "value": "\"' OR '1'='1\" / *",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Valid",
+   "desc": "Letters only",
+   "value": "Alice",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Valid",
+   "desc": "Hyphen and apostrophe",
+   "value": "Mary-Ann O'Neil",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name is required.",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name is required.",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Invalid",
+   "desc": "All spaces",
+   "value": "     ",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name may contain letters, spaces, hyphens and apostrophes only.",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Invalid",
+   "desc": "Numeric characters",
+   "value": "12345",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name may contain letters, spaces, hyphens and apostrophes only.",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Invalid",
+   "desc": "Special characters",
+   "value": "@#$%",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name must be 50 characters or fewer.",
+   "screen": "Add Employee (UI-5)",
+   "field": "First name",
+   "cls": "Invalid",
+   "desc": "Longer than 50 characters",
+   "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "First name must be 50 characters or fewer.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Email",
+   "cls": "Valid",
+   "desc": "Well-formed address",
+   "value": "new.hire@pms.test",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Enter a valid email address.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Email",
+   "cls": "Invalid",
+   "desc": "Missing @",
+   "value": "newhire.pms.test",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Email is required.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Email",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "An employee with this email already exists.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Email",
+   "cls": "Invalid",
+   "desc": "Duplicate of existing employee",
+   "value": "maria.lopez@pms.test",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "An employee with this email already exists.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Hire date",
+   "cls": "Valid",
+   "desc": "Past date",
+   "value": "2025-06-01",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Hire date cannot be in the future.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Hire date",
+   "cls": "Invalid",
+   "desc": "Future date",
+   "value": "2030-01-01",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Hire date is required.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Hire date",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Hire date is required.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Department",
+   "cls": "Valid",
+   "desc": "Department selected",
+   "value": "1",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Select a department.",
+   "screen": "Add Employee (UI-5)",
+   "field": "Department",
+   "cls": "Invalid",
+   "desc": "No department selected",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Select a department.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Valid",
+   "desc": "Typical shift",
+   "value": "8",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Select a department.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Valid",
+   "desc": "Boundary: 0",
+   "value": "0",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Select a department.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Valid",
+   "desc": "Boundary: 24",
+   "value": "24",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours must not exceed 24.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Invalid",
+   "desc": "Above upper bound (24.5)",
+   "value": "24.5",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours must be at least 0.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Invalid",
+   "desc": "Negative",
+   "value": "-1",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours must be a number.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Invalid",
+   "desc": "Non-numeric",
+   "value": "eight",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours is required.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Regular hours",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours is required.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Overtime hours",
+   "cls": "Valid",
+   "desc": "Zero overtime",
+   "value": "0",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Regular hours is required.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Overtime hours",
+   "cls": "Valid",
+   "desc": "Overtime 2 h",
+   "value": "2",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Total hours for one day cannot exceed 24.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Overtime hours",
+   "cls": "Invalid",
+   "desc": "Total regular+OT > 24 (8 + 20)",
+   "value": "20",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime hours must be at least 0.",
+   "screen": "Attendance Entry (UI-6)",
+   "field": "Overtime hours",
+   "cls": "Invalid",
+   "desc": "Negative",
+   "value": "-3",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime hours must be at least 0.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Valid",
+   "desc": "Typical rate",
+   "value": "25.50",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate must be greater than 0.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Invalid",
+   "desc": "Zero",
+   "value": "0",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate must be greater than 0.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Invalid",
+   "desc": "Negative",
+   "value": "-5",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate must not exceed 1000.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Invalid",
+   "desc": "Above 1000 (hourly max)",
+   "value": "1500",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate must be a number.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Invalid",
+   "desc": "Non-numeric",
+   "value": "abc",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate is required.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Hourly rate",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate is required.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Overtime multiplier",
+   "cls": "Valid",
+   "desc": "1.5",
+   "value": "1.5",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Rate is required.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Overtime multiplier",
+   "cls": "Valid",
+   "desc": "Boundary 1.0",
+   "value": "1",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime multiplier must be at least 1.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Overtime multiplier",
+   "cls": "Invalid",
+   "desc": "Below 1.0",
+   "value": "0.5",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime multiplier must not exceed 3.",
+   "screen": "Compensation Setup (UI-7)",
+   "field": "Overtime multiplier",
+   "cls": "Invalid",
+   "desc": "Above 3.0",
+   "value": "3.5",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime multiplier must not exceed 3.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Percentage value",
+   "cls": "Valid",
+   "desc": "5 %",
+   "value": "5",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Overtime multiplier must not exceed 3.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Percentage value",
+   "cls": "Valid",
+   "desc": "Boundary 100 %",
+   "value": "100",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction value must not exceed 100.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Percentage value",
+   "cls": "Invalid",
+   "desc": "Above 100 %",
+   "value": "101",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction value must be greater than 0.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Percentage value",
+   "cls": "Invalid",
+   "desc": "Zero",
+   "value": "0",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction value must be a number.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Percentage value",
+   "cls": "Invalid",
+   "desc": "Non-numeric",
+   "value": "x",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction value must be a number.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Deduction name",
+   "cls": "Valid",
+   "desc": "Normal text",
+   "value": "Parking",
+   "expected": "Saved",
+   "actual": "Saved",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction name is required.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Deduction name",
+   "cls": "Invalid",
+   "desc": "Empty",
+   "value": "",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  },
+  {
+   "msg": "Deduction name must be 40 characters or fewer.",
+   "screen": "Deduction Setup (UI-8)",
+   "field": "Deduction name",
+   "cls": "Invalid",
+   "desc": "Over 40 characters",
+   "value": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+   "expected": "Error message",
+   "actual": "Error message",
+   "status": "PASS"
+  }
+ ],
+ "ft": [
+  {
+   "id": "FT-1",
+   "title": "Log In (valid credentials)",
+   "purpose": "Verify a Payroll Administrator can log in and reach the role-based dashboard.",
+   "prereq": "Seeded account padmin exists; app running.",
+   "steps": [
+    "Open the application URL.",
+    "Enter username \"padmin\" and password \"Payroll123!\".",
+    "Click Log In."
+   ],
+   "expected": "Dashboard (UI-2) opens with welcome banner and role-specific tiles.",
+   "status": "PASS",
+   "observed": "Dashboard displayed with welcome banner and tiles: Employees, Attendance, Compensation, Deductions, Payroll, Reports, Audit Log.",
+   "shot": "ft1"
+  },
+  {
+   "id": "FT-1.2",
+   "title": "Log In - account lockout",
+   "purpose": "Verify the account locks after 5 failed attempts (S1.1).",
+   "prereq": "Seeded account james exists and is unlocked.",
+   "steps": [
+    "Attempt login as \"james\" with a wrong password five times.",
+    "Attempt login with the correct password."
+   ],
+   "expected": "After the fifth failure the account is locked; the correct password is also refused with a lock message.",
+   "status": "PASS",
+   "observed": "Attempts 1-4: \"Invalid username or password.\". Attempt 5: \"Account locked after 5 failed attempts. Contact a System Administrator.\". Login with the correct password afterwards still refused: \"Account locked after 5 failed attempts. Contact a System Administrator.\".",
+   "shot": "ft1_2"
+  },
+  {
+   "id": "FT-2",
+   "title": "Unlock User (System Administrator)",
+   "purpose": "Verify a System Administrator can restore a locked account.",
+   "prereq": "FT-1.2 executed (james locked).",
+   "steps": [
+    "Log in as sysadmin.",
+    "Open Users.",
+    "Click Unlock on \"james\".",
+    "Log in as james with the correct password."
+   ],
+   "expected": "Account becomes active and login succeeds.",
+   "status": "PASS",
+   "observed": "Locked account \"james\" was listed with an Unlock button; after unlocking, james logged in successfully.",
+   "shot": "ft2"
+  },
+  {
+   "id": "FT-3",
+   "title": "Role-based menu and access control",
+   "purpose": "Verify an Employee sees only permitted menu items and cannot reach admin functions directly (S9.2).",
+   "prereq": "Account maria (Employee) exists.",
+   "steps": [
+    "Log in as maria.",
+    "Observe the navigation menu.",
+    "Request the employee list and payroll periods directly through the API."
+   ],
+   "expected": "Only \"My Pay Statements\" is shown; direct requests are rejected with 403.",
+   "status": "PASS",
+   "observed": "Menu shows only ['Home', 'My Pay Statements']. Direct API calls to /api/employees and /api/periods returned HTTP 403 and 403 (permission denied).",
+   "shot": "ft3"
+  },
+  {
+   "id": "FT-3.1",
+   "title": "Unauthenticated access blocked",
+   "purpose": "Verify protected endpoints reject requests without a session (MW-2).",
+   "prereq": "No active session.",
+   "steps": [
+    "Without logging in, request /api/employees."
+   ],
+   "expected": "HTTP 401, no data returned.",
+   "status": "PASS",
+   "observed": "Unauthenticated request to a protected endpoint returned HTTP 401.",
+   "shot": null
+  },
+  {
+   "id": "FT-4",
+   "title": "Add Employee and find via Search",
+   "purpose": "Verify a valid employee is saved and retrievable (S2.1, S2.3).",
+   "prereq": "Logged in as padmin; Employee List open.",
+   "steps": [
+    "Click + Add.",
+    "Enter Priya / Nair / priya.nair@pms.test / 2026-02-02, Department Finance, Position Analyst.",
+    "Click Save.",
+    "Search for \"Nair\"."
+   ],
+   "expected": "Record saved; search result shows the new employee.",
+   "status": "PASS",
+   "observed": "Success message \"Employee saved.\" shown; searching \"Nair\" returns the new row: 10 Priya Nair Finance Analyst Active Deactivate.",
+   "shot": "ft4"
+  },
+  {
+   "id": "FT-5",
+   "title": "Search / Filter employees",
+   "purpose": "Verify search by name and department filter, including no-result case.",
+   "prereq": "Seeded employees exist.",
+   "steps": [
+    "Search \"zzzz\".",
+    "Clear text; choose Department = Engineering; Search."
+   ],
+   "expected": "\"No employees found.\" for unknown text; only Engineering employees listed for the filter.",
+   "status": "PASS",
+   "observed": "Name \"zzzz\" -> \"No employees found.\". Department filter Engineering -> only: 1 Maria Lopez Engineering Engineer Active Deactivate.",
+   "shot": null
+  },
+  {
+   "id": "FT-5.1",
+   "title": "Add Employee - validation errors",
+   "purpose": "Verify invalid input is rejected with clear messages and nothing is saved (S11.1).",
+   "prereq": "Employee List open.",
+   "steps": [
+    "Click + Add.",
+    "Enter first name \"Bad3\" and leave other fields empty.",
+    "Click Save."
+   ],
+   "expected": "Error messages displayed per invalid field; employee not created.",
+   "status": "PASS",
+   "observed": "Toast: \"First name may contain letters, spaces, hyphens and apostrophes only.\". Inline messages: ['First name may contain letters, spaces, hyphens and apostrophes only.', 'Last name is required.', 'Email is required.', 'Hire date is required.', 'Select a department.', 'Select a position.']. Form not saved.",
+   "shot": "ft5"
+  },
+  {
+   "id": "FT-6",
+   "title": "Deactivate Employee (confirmation)",
+   "purpose": "Verify irreversible action requires confirmation (S2.2, UX gap check).",
+   "prereq": "An active employee exists.",
+   "steps": [
+    "Search \"Worker\".",
+    "Click Deactivate, then Cancel.",
+    "Click Deactivate, then Confirm."
+   ],
+   "expected": "Cancel changes nothing; Confirm sets status Inactive.",
+   "status": "PASS",
+   "observed": "Deactivate shows a confirmation dialog; Cancel left the employee Active; Confirm changed status to Inactive.",
+   "shot": "ft5b"
+  },
+  {
+   "id": "FT-7",
+   "title": "Enter Attendance hours",
+   "purpose": "Verify regular and overtime hours are stored for an employee (S3.1, S3.2).",
+   "prereq": "Employee Maria Lopez (ID 1) active.",
+   "steps": [
+    "Open Attendance.",
+    "Select Maria.",
+    "Submit 2026-10-01: 8 regular / 0 OT.",
+    "Submit 2026-10-02: 8 regular / 2 OT."
+   ],
+   "expected": "Both entries saved and shown in the grid.",
+   "status": "PASS",
+   "observed": "Both days saved and listed: 2026-10-01 8 0 | 2026-10-02 8 2.",
+   "shot": "ft6"
+  },
+  {
+   "id": "FT-7.1",
+   "title": "Overtime approval-threshold flag",
+   "purpose": "Verify excessive overtime is flagged (S3.3).",
+   "prereq": "Attendance screen open.",
+   "steps": [
+    "Submit 2026-09-30 with 8 regular, 11 overtime."
+   ],
+   "expected": "Saved with a warning that overtime exceeds the approval threshold.",
+   "status": "PASS",
+   "observed": "Overtime of 11 h saved with warning: \"Overtime exceeds approval threshold and is flagged for review.\". Entry then corrected to 1 h (existing day overwritten, no duplicate).",
+   "shot": null
+  },
+  {
+   "id": "FT-8",
+   "title": "Compensation Setup - load, edit, persist",
+   "purpose": "Verify compensation is stored and reloaded (S4.1, S4.2).",
+   "prereq": "Compensation exists for James Carter.",
+   "steps": [
+    "Open Compensation; select James.",
+    "Change salary to 80000; Save.",
+    "Re-select James."
+   ],
+   "expected": "Existing values prefill; new value persists.",
+   "status": "PASS",
+   "observed": "Existing compensation loaded (78000); changed to 80000 and persisted after re-selecting the employee (shown 80000); restored to 78000 for later tests.",
+   "shot": "ft7"
+  },
+  {
+   "id": "FT-9",
+   "title": "Add / remove Deduction",
+   "purpose": "Verify deductions can be added and removed per employee (S5.1).",
+   "prereq": "Maria has 2 deductions.",
+   "steps": [
+    "Open Deductions; select Maria.",
+    "Add \"Union Dues\", Other, Flat, 20.",
+    "Remove it."
+   ],
+   "expected": "Row added then removed.",
+   "status": "PASS",
+   "observed": "Deduction list grew from 2 to 3 rows after adding \"Union Dues\" ($20 flat); Remove returned it to 2.",
+   "shot": "ft8"
+  },
+  {
+   "id": "FT-10",
+   "title": "Create payroll period (+ overlap/date checks)",
+   "purpose": "Verify period creation and rejection of overlapping or reversed periods (S6.1).",
+   "prereq": "Logged in as padmin; Payroll screen open.",
+   "steps": [
+    "Create 2026-10-01 to 2026-10-14.",
+    "Create 2026-10-10 to 2026-10-20.",
+    "Create 2026-11-05 to 2026-11-01."
+   ],
+   "expected": "First saved; the other two rejected with messages.",
+   "status": "PASS",
+   "observed": "Period 2026-10-01..2026-10-14 created. Overlapping period -> \"This period overlaps an existing payroll period.\". End before start -> \"End date cannot be before start date.\".",
+   "shot": "ft9"
+  },
+  {
+   "id": "FT-11",
+   "title": "Calculate Payroll (accuracy)",
+   "purpose": "Verify gross, deduction and net amounts equal independently computed values (S6.2, S6.3).",
+   "prereq": "Period created; Maria: 16 reg h + 2 OT h @ $40, 1.5x, bonus $100, 12% tax + $85 insurance; James $78,000; Daniel $95,000 + $250 bonus, 5%; Aisha no hours.",
+   "steps": [
+    "Select the period.",
+    "Click Calculate Payroll.",
+    "Compare each row with hand calculation."
+   ],
+   "expected": "Maria 860.00/188.20/671.80; James 3,000.00/450.00/2,550.00; Aisha 0; Daniel 3,903.85/195.19/3,708.66.",
+   "status": "PASS",
+   "observed": "Results matched hand calculations - Maria Lopez: gross $860.00, deductions $188.20, net $671.80; James Carter: gross $3,000.00, deductions $450.00, net $2,550.00; Aisha Khan: gross $0.00, deductions $0.00, net $0.00; Daniel Okafor: gross $3,903.85, deductions $195.19, net $3,708.66. Employees without compensation (new hires) skipped. Status = Calculated.",
+   "shot": "ft10"
+  },
+  {
+   "id": "FT-12",
+   "title": "Finalize requires second approver",
+   "purpose": "Verify the calculating user cannot also finalize (S6.4 second-person authorization).",
+   "prereq": "Period is Calculated by padmin.",
+   "steps": [
+    "As padmin, click Finalize and confirm."
+   ],
+   "expected": "Rejected; status unchanged.",
+   "status": "PASS",
+   "observed": "Same user (who calculated) attempted Finalize -> \"A second authorized person must finalize this period.\"; status stays \"Calculated\".",
+   "shot": "ft10b"
+  },
+  {
+   "id": "FT-13",
+   "title": "Finalize payroll (second approver, confirmation)",
+   "purpose": "Verify a different authorized user can finalize and that a confirmation dialog protects the action.",
+   "prereq": "FT-12 executed; fin1 account exists.",
+   "steps": [
+    "Log in as fin1.",
+    "Open Payroll; select the period.",
+    "Click Finalize -> Cancel.",
+    "Click Finalize -> Confirm."
+   ],
+   "expected": "Cancel leaves status; Confirm sets status Finalized.",
+   "status": "PASS",
+   "observed": "Confirmation dialog appeared; Cancel kept status \"Calculated\"; Confirm by finance user fin1 set status \"Finalized\".",
+   "shot": "ft11"
+  },
+  {
+   "id": "FT-14",
+   "title": "Finalized period is locked",
+   "purpose": "Verify finalized data cannot be recalculated or edited (S6.4, S10.2).",
+   "prereq": "Period finalized.",
+   "steps": [
+    "Click Calculate Payroll on the finalized period.",
+    "Submit attendance dated inside the period."
+   ],
+   "expected": "Both operations rejected.",
+   "status": "PASS",
+   "observed": "Recalculate -> \"Period is finalized and locked.\". Attendance edit inside the period -> \"This date belongs to a finalized payroll period and cannot be changed.\".",
+   "shot": null
+  },
+  {
+   "id": "FT-15",
+   "title": "Employee views and downloads own Pay Statement",
+   "purpose": "Complete journey end: employee self-service (S7.1, S7.2).",
+   "prereq": "Period finalized (FT-13).",
+   "steps": [
+    "Log in as maria.",
+    "Open My Pay Statements; choose the period.",
+    "Click Download."
+   ],
+   "expected": "Earnings, deductions and net pay shown (gross $860.00, net $671.80); download succeeds.",
+   "status": "PASS",
+   "observed": "Maria sees her statement: gross $860.00, net $671.80. Download produced a file containing the same net pay.",
+   "shot": "ft12"
+  },
+  {
+   "id": "FT-16",
+   "title": "Employee cannot read another employee's pay data",
+   "purpose": "Verify record-level restriction (S12.2).",
+   "prereq": "Maria logged in; James also has a finalized statement.",
+   "steps": [
+    "Call /api/paystatements/1?employee_id=2.",
+    "Call /api/periods/1/results."
+   ],
+   "expected": "Only the caller's own data is returned; payroll results forbidden (403).",
+   "status": "PASS",
+   "observed": "Request that tried to read employee 2's statement returned Maria's own data (\"Maria Lopez\"); payroll results endpoint returned HTTP 403.",
+   "shot": null
+  },
+  {
+   "id": "FT-17",
+   "title": "Payroll Summary report",
+   "purpose": "Verify the report totals equal the sum of the calculated rows (S8.1).",
+   "prereq": "Period calculated/finalized.",
+   "steps": [
+    "Open Reports; choose the period; click Generate."
+   ],
+   "expected": "Totals: gross $7,763.85; net $6,930.46.",
+   "status": "PASS",
+   "observed": "Payroll Summary totals: gross $7,763.85 (860.00+3,000.00+0+3,903.85), net $6,930.46.",
+   "shot": "ft14"
+  },
+  {
+   "id": "FT-18",
+   "title": "Audit log records and filters activity",
+   "purpose": "Verify important actions are logged and filterable (S10.1).",
+   "prereq": "Earlier tests executed.",
+   "steps": [
+    "Log in as sysadmin.",
+    "Open Audit Log.",
+    "Filter user = fin1."
+   ],
+   "expected": "Events present; filter restricts rows.",
+   "status": "PASS",
+   "observed": "Audit log lists LOGIN_FAILED, CALCULATE_PAYROLL, FINALIZE_PAYROLL, CREATE_EMPLOYEE, SAVE_ATTENDANCE events with user and timestamp. Filter by user \"fin1\" shows only that user's actions (including FINALIZE_PAYROLL).",
+   "shot": "ft15"
+  }
+ ]
+}
